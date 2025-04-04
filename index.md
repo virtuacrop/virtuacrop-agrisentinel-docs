@@ -125,7 +125,6 @@ Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um pol
 - `email` (opcional): Para autenticação Firebase
 - `password` (opcional): Para autenticação Firebase
 
-<details>
 <summary>📌 Exemplo de Polígono</summary>
 
 ```json
@@ -137,7 +136,6 @@ Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um pol
   ]]
 }
 ```
-</details>
 
 #### Detalhes do Processamento
 
