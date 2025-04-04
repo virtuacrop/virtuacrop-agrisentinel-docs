@@ -38,7 +38,6 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `include_image` (opcional): Booleano (predefinição: `true`)  
 - `include_median` (opcional): Booleano (predefinição: `true`)  
 
-<details>
 <summary>📌 Exemplo de Polígono</summary>
 
 ```json
@@ -53,7 +52,6 @@ O pedido deve ser um payload JSON com os seguintes campos:
   ]
 }
 ```
-</details>
 
 #### Resposta
 
