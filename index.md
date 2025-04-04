@@ -85,8 +85,9 @@ payload = {
     "polygon": {
         "type": "Polygon",
         "coordinates": [[
-            [-8.5530436, 39.3620312],
-            [-8.5530436, 39.3620312]
+            [-8.553043599579647, 39.362031162768943],
+            [-8.553213381033897, 39.363064707371684],
+            [-8.553043599579647, 39.362031162768943]
         ]]
     },
     "start_date": "2024-10-01",
@@ -131,8 +132,9 @@ Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um pol
 {
   "type": "Polygon",
   "coordinates": [[
-    [-8.5530436, 39.3620312],
-    [-8.5530436, 39.3620312]
+    [-8.553043599579647, 39.362031162768943],
+    [-8.553213381033897, 39.363064707371684],
+    [-8.553043599579647, 39.362031162768943]
   ]]
 }
 ```
@@ -167,8 +169,9 @@ payload = {
     "polygon": {
         "type": "Polygon",
         "coordinates": [[
-            [-8.5530436, 39.3620312],
-            [-8.5530436, 39.3620312]
+            [-8.553043599579647, 39.362031162768943],
+            [-8.553213381033897, 39.363064707371684],
+            [-8.553043599579647, 39.362031162768943]
         ]]
     }
 }
@@ -187,5 +190,3 @@ except Exception as e:
 ## Resumo
 
 Esta documentação descreve a utilização, entradas e saídas dos endpoints `/ndvi` e `/productivity` da API VirtuaCrop-AgriSentinel, incluindo exemplos de pedidos, resultados esperados e comportamento detalhado para cada processo.
-
-Let me know if you want this saved to a file, or converted to HTML or PDF too!
