@@ -93,8 +93,8 @@ payload = {
     },
     "start_date": "2024-10-01",
     "end_date": "2025-03-31",
-    "include_median": True,
-    "include_image": True,
+    "include_median": "True",
+    "include_image": "True",
     "max_cloud_cover": 30,
     "collection": "sentinel2_landsat8"
 }
@@ -116,7 +116,6 @@ else:
 
 Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um polígono dado. Inclui:
 - NDVI médio ao longo de um período histórico
-- Reprojeção EPSG:4326
 - Recorte do raster NDVI
 - Classificação em 4 zonas utilizando percentis NDVI (20º, 50º, 80º)
 - Suavização com filtro mediano
@@ -144,9 +143,6 @@ Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um pol
 
 #### Detalhes do Processamento
 
-- **Período**: Calculado automaticamente com base no mês atual:
-  - Se antes de Outubro → 1 de Outubro (há 6 anos) → 30 de Setembro (ano anterior)
-  - Se Outubro ou depois → 1 de Outubro (há 5 anos) → 30 de Setembro (ano atual)
 - **NDVI**: Calculado a partir do Sentinel-2 (NIR: B08, Vermelho: B04), com máscara de nuvens (banda SCL)
 - **Classificação**: Baseada em percentis NDVI, depois suavizada
 
