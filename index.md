@@ -97,8 +97,6 @@ payload = {
     "include_image": True,
     "max_cloud_cover": 30,
     "collection": "sentinel2_landsat8"
-    # "email": "tiago@virtuacrop.com",
-    # "password": "tt1234"
 }
 
 response = requests.post(endpoint, json=payload)
