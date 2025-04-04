@@ -1,45 +1,45 @@
-# VirtuaCrop-AgriSentinel API Documentation
+# Documentação da API VirtuaCrop-AgriSentinel
 
-The **VirtuaCrop-AgriSentinel API** provides geospatial analysis tools that leverage satellite imagery to compute vegetation indices and productivity zones.
+A **API VirtuaCrop-AgriSentinel** fornece ferramentas de análise geoespacial que utilizam imagens de satélite para calcular índices de vegetação e zonas de produtividade.
 
-**Base URL**:  
+**URL Base**:  
 `https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app`
 
 ---
 
 ## Endpoints
 
-### 1. Calculate NDVI Endpoint
+### 1. Endpoint de Cálculo NDVI
 
 - **URL**: `/ndvi`  
-- **Method**: `POST`
+- **Método**: `POST`
 
-#### Description
+#### Descrição
 
-This endpoint calculates the **median NDVI (Normalized Difference Vegetation Index)** over a specified polygon using satellite imagery. It supports three data sources:
+Este endpoint calcula o **NDVI mediano (Índice de Vegetação da Diferença Normalizada)** sobre um polígono especificado utilizando imagens de satélite. Suporta três fontes de dados:
 
 - `sentinel2`
 - `landsat8`
-- `sentinel2_landsat8` (merged dataset)
+- `sentinel2_landsat8` (conjunto de dados combinado)
 
-Optional Firebase authentication logs request/usage data. If authentication is provided, it generates and uploads an NDVI **NetCDF** file to Google Cloud Storage.
+A autenticação opcional do Firebase regista dados de pedidos/utilização. Se for fornecida autenticação, gera e carrega um ficheiro NDVI **NetCDF** para o Google Cloud Storage.
 
-#### Request Body
+#### Corpo do Pedido
 
-The request must be a JSON payload with the following fields:
+O pedido deve ser um payload JSON com os seguintes campos:
 
-- `polygon` (required): A GeoJSON object defining the area of interest.  
-- `start_date` (required): Format `"YYYY-MM-DD"`  
-- `end_date` (required): Format `"YYYY-MM-DD"`  
-- `max_cloud_cover` (optional): Max cloud cover percentage (default: `50.0`)  
-- `collection` (optional): `"sentinel2"`, `"landsat8"`, or `"sentinel2_landsat8"` (default: `"sentinel2"`)  
-- `email` (optional): For Firebase auth  
-- `password` (optional): For Firebase auth  
-- `include_image` (optional): Boolean (default: `true`)  
-- `include_median` (optional): Boolean (default: `true`)  
+- `polygon` (obrigatório): Um objeto GeoJSON que define a área de interesse.  
+- `start_date` (obrigatório): Formato `"YYYY-MM-DD"`  
+- `end_date` (obrigatório): Formato `"YYYY-MM-DD"`  
+- `max_cloud_cover` (opcional): Percentagem máxima de cobertura de nuvens (predefinição: `50.0`)  
+- `collection` (opcional): `"sentinel2"`, `"landsat8"`, ou `"sentinel2_landsat8"` (predefinição: `"sentinel2"`)  
+- `email` (opcional): Para autenticação Firebase  
+- `password` (opcional): Para autenticação Firebase  
+- `include_image` (opcional): Booleano (predefinição: `true`)  
+- `include_median` (opcional): Booleano (predefinição: `true`)  
 
 <details>
-<summary>📌 Example Polygon</summary>
+<summary>📌 Exemplo de Polígono</summary>
 
 ```json
 {
@@ -55,15 +55,15 @@ The request must be a JSON payload with the following fields:
 ```
 </details>
 
-#### Response
+#### Resposta
 
-The response includes:
-- `median_values`: List of NDVI values per date
-  - `DATA`: Date in "YYYY-MM-DD"
-  - `VALUES`: Median NDVI (nullable if no valid data)
-- `netcdf_download_url`: Signed URL (1-hour validity) for downloading the NetCDF file
+A resposta inclui:
+- `median_values`: Lista de valores NDVI por data
+  - `DATA`: Data no formato "YYYY-MM-DD"
+  - `VALUES`: NDVI mediano (pode ser nulo se não houver dados válidos)
+- `netcdf_download_url`: URL assinada (válida por 1 hora) para descarregar o ficheiro NetCDF
 
-Example response:
+Exemplo de resposta:
 ```json
 {
   "median_values": [
@@ -75,7 +75,7 @@ Example response:
 }
 ```
 
-#### Example Usage (Python)
+#### Exemplo de Utilização (Python)
 
 ```python
 import requests
@@ -103,35 +103,35 @@ payload = {
 
 response = requests.post(endpoint, json=payload)
 if response.status_code == 200:
-    print("NDVI API Response:")
+    print("Resposta da API NDVI:")
     print(response.json())
 else:
-    print("Error:", response.status_code, response.text)
+    print("Erro:", response.status_code, response.text)
 ```
 
-### 2. Calculate Productivity Zones Endpoint
+### 2. Endpoint de Cálculo de Zonas de Produtividade
 
 - **URL**: `/productivity`  
-- **Method**: `POST`
+- **Método**: `POST`
 
-#### Description
+#### Descrição
 
-Calculates productivity zones using Sentinel-2 NDVI imagery for a given polygon. Includes:
-- Mean NDVI over a historical date range
-- EPSG:4326 reprojection
-- NDVI raster clipping
-- Classification into 4 zones using NDVI percentiles (20th, 50th, 80th)
-- Median filter smoothing
-- Upload to Google Cloud Storage
+Calcula zonas de produtividade utilizando imagens NDVI do Sentinel-2 para um polígono dado. Inclui:
+- NDVI médio ao longo de um período histórico
+- Reprojeção EPSG:4326
+- Recorte do raster NDVI
+- Classificação em 4 zonas utilizando percentis NDVI (20º, 50º, 80º)
+- Suavização com filtro mediano
+- Carregamento para o Google Cloud Storage
 
-#### Request Body
+#### Corpo do Pedido
 
-- `polygon` (required): A GeoJSON polygon
-- `email` (optional): For Firebase auth
-- `password` (optional): For Firebase auth
+- `polygon` (obrigatório): Um polígono GeoJSON
+- `email` (opcional): Para autenticação Firebase
+- `password` (opcional): Para autenticação Firebase
 
 <details>
-<summary>📌 Example Polygon</summary>
+<summary>📌 Exemplo de Polígono</summary>
 
 ```json
 {
@@ -144,15 +144,15 @@ Calculates productivity zones using Sentinel-2 NDVI imagery for a given polygon.
 ```
 </details>
 
-#### Processing Details
+#### Detalhes do Processamento
 
-- **Date Range**: Automatically calculated based on current month:
-  - If before October → Oct 1 (6 years ago) → Sep 30 (previous year)
-  - If October or later → Oct 1 (5 years ago) → Sep 30 (current year)
-- **NDVI**: Computed from Sentinel-2 (NIR: B08, Red: B04), cloud masked (SCL band)
-- **Classification**: Based on NDVI percentiles, then smoothed
+- **Período**: Calculado automaticamente com base no mês atual:
+  - Se antes de Outubro → 1 de Outubro (há 6 anos) → 30 de Setembro (ano anterior)
+  - Se Outubro ou depois → 1 de Outubro (há 5 anos) → 30 de Setembro (ano atual)
+- **NDVI**: Calculado a partir do Sentinel-2 (NIR: B08, Vermelho: B04), com máscara de nuvens (banda SCL)
+- **Classificação**: Baseada em percentis NDVI, depois suavizada
 
-#### Response
+#### Resposta
 
 - **200 OK**:
 ```json
@@ -161,11 +161,11 @@ Calculates productivity zones using Sentinel-2 NDVI imagery for a given polygon.
 }
 ```
 
-- **400 Bad Request**: Invalid or missing polygon
-- **401 Unauthorized**: Auth failed
-- **500 Internal Server Error**: Processing or upload error
+- **400 Bad Request**: Polígono inválido ou em falta
+- **401 Unauthorized**: Falha na autenticação
+- **500 Internal Server Error**: Erro no processamento ou no carregamento
 
-#### Example Usage (Python)
+#### Exemplo de Utilização (Python)
 
 ```python
 import requests
@@ -184,19 +184,18 @@ payload = {
 }
 
 response = requests.post(endpoint, json=payload)
-print("Status Code:", response.status_code)
+print("Código de Estado:", response.status_code)
 try:
-    print("Response JSON:")
+    print("Resposta JSON:")
     print(response.json())
 except Exception as e:
-    print("Error decoding JSON:", e)
+    print("Erro ao decodificar JSON:", e)
 ```
 
 ---
 
-## Summary
+## Resumo
 
-This documentation outlines the usage, inputs, and outputs for the `/ndvi` and `/productivity` endpoints of the VirtuaCrop-AgriSentinel API, including example requests, expected results, and detailed behavior for each process.
+Esta documentação descreve a utilização, entradas e saídas dos endpoints `/ndvi` e `/productivity` da API VirtuaCrop-AgriSentinel, incluindo exemplos de pedidos, resultados esperados e comportamento detalhado para cada processo.
 
 Let me know if you want this saved to a file, or converted to HTML or PDF too!
-
