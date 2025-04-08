@@ -235,6 +235,100 @@ except Exception as e:
     print("Erro ao decodificar JSON:", e)
 ```
 
+
+### 3. Endpoint de Super-Resolução
+
+- **URL**: `/super-resolution`  
+- **Método**: `POST`
+
+#### Descrição
+
+Este endpoint processa imagens de satélite para melhorar sua resolução espacial. O processamento é realizado de forma assíncrona, com atualizações de status registradas no Firebase Realtime Database.
+
+#### Corpo do Pedido
+
+O pedido deve ser um payload JSON com os seguintes campos:
+
+- `polygon` (obrigatório): Um objeto GeoJSON que define a área de interesse
+- `start_date` (obrigatório): Formato `"YYYY-MM-DD"`
+- `end_date` (obrigatório): Formato `"YYYY-MM-DD"`
+- `max_cloud_cover` (opcional): Percentagem máxima de cobertura de nuvens (predefinição: `50.0`)
+- `email` (opcional): Para autenticação Firebase
+- `password` (opcional): Para autenticação Firebase
+
+<details>
+<summary>📌 Exemplo de Polígono</summary>
+
+```json
+{
+  "type": "Polygon",
+  "coordinates": [[
+    [-8.5530436, 39.3620312],
+    [-8.5530436, 39.3620312]
+  ]]
+}
+```
+</details>
+
+#### Resposta
+
+A resposta inicial inclui:
+- `result`: Objeto com informações do processamento
+  - `status`: Status atual do processamento
+  - `message`: Mensagem descritiva
+  - `processing_date`: Data e hora do início do processamento
+- `usage_id`: ID único para acompanhamento do processamento
+
+Exemplo de resposta:
+```json
+{
+  "result": {
+    "status": "processing",
+    "message": "Super-resolution processing in progress",
+    "processing_date": "2024-03-21T10:30:00.000Z"
+  },
+  "usage_id": "abc123xyz"
+}
+```
+
+#### Atualização de Status
+
+O status do processamento é atualizado no Firebase Realtime Database com:
+- `status`: Atualizado para "done" quando concluído
+- `url`: URL para download do resultado
+- `update_date`: Data e hora da atualização
+
+#### Exemplo de Utilização (Python)
+
+```python
+import requests
+
+BASE_URL = "https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app"
+endpoint = f"{BASE_URL}/super-resolution"
+
+payload = {
+    "polygon": {
+        "type": "Polygon",
+        "coordinates": [[
+            [-8.5530436, 39.3620312],
+            [-8.5530436, 39.3620312]
+        ]]
+    },
+    "start_date": "2024-01-01",
+    "end_date": "2024-03-21",
+    "max_cloud_cover": 30,
+    "email": "user@example.com",
+    "password": "userpassword"
+}
+
+response = requests.post(endpoint, json=payload)
+if response.status_code == 200:
+    print("Resposta da API Super-Resolution:")
+    print(response.json())
+else:
+    print("Erro:", response.status_code, response.text)
+```
+
 ---
 
 ## Resumo
