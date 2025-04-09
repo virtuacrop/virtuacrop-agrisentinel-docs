@@ -120,7 +120,7 @@ payload = {
     "include_median": "True",
     "include_image": "True",
     "max_cloud_cover": 30,
-    "collection": "sentinel_2"
+    "collection": "sentinel2"
 }
 
 response = requests.post(endpoint, json=payload)
