@@ -32,6 +32,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `start_date` (obrigatório): Formato `"YYYY-MM-DD"`  
 - `end_date` (obrigatório): Formato `"YYYY-MM-DD"`  
 - `max_cloud_cover` (opcional): Percentagem máxima de cobertura de nuvens (predefinição: `50.0`)  
+- `collection` (opcional): `"sentinel2"`, `"landsat8"`, ou `"sentinel2_landsat8"` (predefinição: `"sentinel2"`)  
 - `email` (opcional): Para autenticação Firebase  
 - `password` (opcional): Para autenticação Firebase  
 - `include_image` (opcional): Booleano (predefinição: `true`)  
@@ -119,6 +120,7 @@ payload = {
     "include_median": "True",
     "include_image": "True",
     "max_cloud_cover": 30,
+    "collection": "sentinel_2"
 }
 
 response = requests.post(endpoint, json=payload)
