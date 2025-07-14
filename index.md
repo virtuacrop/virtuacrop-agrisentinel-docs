@@ -93,24 +93,6 @@ Não necessita de corpo.
 }
 ```
 
-#### Exemplo de Utilização (Python)
-
-```python
-
-import requests
-
-BASE_URL = "https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app"
-endpoint = f"{BASE_URL}/user_areas/tmorais"
-
-
-response = requests.post(endpoint)
-if response.status_code == 200:
-    print("Resposta da API NDVI:")
-    print(response.json())
-else:
-    print("Erro:", response.status_code, response.text)
-```
-
 ### 3. /user_areas/dates
 
 #### Descrição
