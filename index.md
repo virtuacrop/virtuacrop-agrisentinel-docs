@@ -16,7 +16,7 @@ https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app
 - [`/user_areas`](#1-user_areas-post) — Guardar área do utilizador e iniciar NDVI
 - [`/user_areas/<user_id>`](#2-user_areasuser_id-post) — Listar áreas guardadas
 - [`/user_areas/dates`](#3-user_areasdates-post) — Datas disponíveis por área
-- [`/productivity`](#4-productivity-post) — Zonas de produtividade NDVI
+- [`/productivity_areas`](#4-productivity-post) — Zonas de produtividade NDVI
 - [`/super-resolution`](#5-super-resolution-post) — Pedido de super-resolução (assíncrono)
 
 ---
@@ -114,3 +114,11 @@ O pedido deve ser um payload JSON com os seguintes campos:
   "area2": ["2025-06-03"]
 }
 ```
+
+### 4. /productivity_areas
+
+TBD
+
+### 5. /super-resolution
+
+TBD
