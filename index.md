@@ -29,7 +29,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `polygon` (obrigatório): Um objeto GeoJSON que define a área de interesse.  
 - `user_id` (obrigatório): Identificador único do utilizador.  
 
-<summary>Exemplo de Payload</summary>
+#### Exemplo de Payload
 
 ```json
 {
@@ -55,11 +55,11 @@ O pedido deve ser um payload JSON com os seguintes campos:
 
 Lista todas as áreas guardadas para um determinado utilizador, com os valores NDVI por data (sem a geometria original).
 
-<summary>Exemplo de Payload</summary>
+#### Exemplo de Payload
 
 Não necessita de corpo.
 
-<summary>Exemplo de resposta</summary>
+#### Exemplo de Resposta
 
 ```json
 {
@@ -97,7 +97,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `user_id` (obrigatório): Identificador único do utilizador.  
 - `area_ids` (obrigatório): Identificador único das parcela e interesse.  
 
-<summary>Exemplo de resposta</summary>
+#### Exemplo de Resposta
 
 ```json
 {
