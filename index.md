@@ -11,14 +11,6 @@ A **API VirtuaCrop-AgriSentinel** fornece ferramentas de análise geoespacial co
 **URL Base**  
 https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app
 
-## 📍 Lista de Endpoints
-
-- [`/user_areas`](#1-user_areas-post) — Guardar área do utilizador e iniciar NDVI
-- [`/user_areas/<user_id>`](#2-user_areasuser_id-post) — Listar áreas guardadas
-- [`/user_areas/dates`](#3-user_areasdates-post) — Datas disponíveis por área
-- [`/productivity_areas`](#4-productivity-post) — Zonas de produtividade NDVI
-- [`/super-resolution`](#5-super-resolution-post) — Pedido de super-resolução (assíncrono)
-
 ---
 
 ### 1. /user_areas
@@ -37,7 +29,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `polygon` (obrigatório): Um objeto GeoJSON que define a área de interesse.  
 - `user_id` (obrigatório): Identificador único do utilizador.  
 
-<summary>📌 Exemplo de Polígono</summary>
+<summary>Exemplo de Payload</summary>
 
 ```json
 {
@@ -63,12 +55,11 @@ O pedido deve ser um payload JSON com os seguintes campos:
 
 Lista todas as áreas guardadas para um determinado utilizador, com os valores NDVI por data (sem a geometria original).
 
-#### Corpo do Pedido
+<summary>Exemplo de Payload</summary>
 
 Não necessita de corpo.
 
-
-#### Exemplo de resposta:
+<summary>Exemplo de resposta</summary>
 
 ```json
 {
@@ -106,7 +97,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 - `user_id` (obrigatório): Identificador único do utilizador.  
 - `area_ids` (obrigatório): Identificador único das parcela e interesse.  
 
-#### Exemplo de resposta:
+<summary>Exemplo de resposta</summary>
 
 ```json
 {
