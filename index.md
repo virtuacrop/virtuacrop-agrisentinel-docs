@@ -73,7 +73,7 @@ O pedido deve ser um payload JSON com os seguintes campos:
 
 ### 2. /user_areas/<user_id> POST
 
-- **URL**: `/user_areas`  
+- **URL**: `/user_areas/<user_id>`  
 - **Método**: `POST`
   
 #### Descrição
