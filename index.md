@@ -217,7 +217,57 @@ Um objeto com uma única chave igual à date, cujo valor são as estatísticas N
 ```
 Campo percentages: histograma em 10 bins (1–10) cobrindo o intervalo 0.0–1.0 de NDVI, em percentagem de píxeis válidos na área.
 
-### 5 DELETE /user_areas/<user_id>/polygons/<area_id>
+### 5 POST /user_areas/<user_id>/multiple_records_by_polygons
+Consulta em lote os registos NDVI (records_by_polygon) de múltiplas parcelas de um utilizador, com opção de filtrar por intervalo de datas (inclusive).
+
+#### Corpo do pedido (JSON)
+O endpoint aceita um dos dois formatos:
+
+A) Intervalo global para todas as áreas
+```json
+{
+  "areas": ["areaA", "areaB", "areaC"],
+  "dates": ["2025-09-01", "2025-09-24"]   // opcional; se omitido, traz todas as datas
+}
+```
+
+B) Intervalo por área
+```json
+{
+  "items": [
+    { "area_id": "areaA", "dates": ["2025-09-01", "2025-09-10"] },
+    { "area_id": "areaB" },                    // sem dates => todas as datas
+    { "area_id": "areaC", "dates": ["2025-09-15"] } // 1 data => range de 1 dia
+  ]
+}
+```
+#### Regras e validação
+	•	dates deve ser lista de strings com formato YYYY-MM-DD.
+	•	Se dates tiver 1 ou mais datas, o serviço usa min(dates) e max(dates) como intervalo inclusive.
+	•	É obrigatório enviar areas (não vazio) ou items (lista).
+	•	Cada area_id corresponde ao uid gravado quando a área foi criada.
+
+#### Resposta (exemplo) (200)
+```json
+{
+  "results": {
+    "areaA": {
+      "2025-09-01": {
+        "MIN": 0.12, "MEDIAN": 0.41, "MAX": 0.76,
+        "total_valid_pixels": 1234,
+        "percentages": { "1": 0, "2": 1.2, "3": 4.8, "4": 10.5, "5": 18.7, "6": 24.3, "7": 20.1, "8": 13.4, "9": 5.6, "10": 1.4 }
+      },
+      "2025-09-08": { "...": "..." }
+    },
+    "areaB": {
+      "2025-09-03": { "...": "..." }
+    }
+  },
+  "not_found_areas": []
+}
+```
+
+### 6 DELETE /user_areas/<user_id>/polygons/<area_id>
 Remove uma parcela (identificada por area_id, que corresponde ao wisecropID guardado no POST /user_areas) de um utilizador.
 Esta operação também atualiza (ou limpa) os dados agregados e séries NDVI associadas.
 
@@ -232,10 +282,10 @@ Esta operação também atualiza (ou limpa) os dados agregados e séries NDVI as
 }
 ```
 
-### 6. /productivity_areas
+### 7. /productivity_areas
 
 TBD
 
-### 7. /super-resolution
+### 8. /super-resolution
 
 TBD
