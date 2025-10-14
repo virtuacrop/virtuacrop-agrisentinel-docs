@@ -282,9 +282,27 @@ Esta operação também atualiza (ou limpa) os dados agregados e séries NDVI as
 }
 ```
 
-### 7. /productivity_areas
+### 7. GET /productivity/<user_id>
+Devolve o URL público do ficheiro GeoTIFF de produtividade (zonas de produção) armazenado no bucket GCS para o utilizador especificado.
 
-TBD
+#### Parâmetros de caminho
+	•	user_id — identificador único do utilizador (por exemplo, utilizador123).
+
+#### Resposta (exameplo) (200)
+```json
+{
+  "user_id": "utilizador123",
+  "combined_url": "https://storage.googleapis.com/virtuacrop-agrisentinel/productivity_zones/utilizador123/prod_zones.tif"
+}
+```
+
+#### Descrição
+	•	O ficheiro .tif devolvido é um Cloud-Optimized GeoTIFF (COG) com valores inteiros de classes (1–4) representando zonas de produtividade:
+	•	1: Baixa produtividade
+	•	2: Média-baixa
+	•	3: Média-alta
+	•	4: Alta produtividade
+	•	O cálculo baseia-se no NDVI mediano multianual (últimos 5 anos) para as parcelas guardadas do utilizador.
 
 ### 8. /super-resolution
 
