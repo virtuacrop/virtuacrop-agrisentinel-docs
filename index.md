@@ -1,4 +1,4 @@
-# Documentação da API VirtuaCrop-AgriSentinel (atualizada)
+# Documentação da API VirtuaCrop-AgriSentinel (v3)
 
 A **API VirtuaCrop-AgriSentinel** disponibiliza análise geoespacial a partir de Sentinel-2:
 	•	Séries temporais NDVI (mín., mediana, máx.) por data
