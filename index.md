@@ -1,310 +1,199 @@
-# Documentação da API VirtuaCrop-AgriSentinel (v3)
+# Documentacao API VirtuaCrop-AgriSentinel (v4)
 
-A **API VirtuaCrop-AgriSentinel** disponibiliza análise geoespacial a partir de Sentinel-2:
-	•	Séries temporais NDVI (mín., mediana, máx.) por data
-	•	Séries por polígono (ID) e série agregada (“union”)
-	•	Histograma de percentis (10 bins) e número de píxeis válidos
-	•	Geração opcional de GeoTIFF COG (float32) recortado e mascarado à área
-	•	Gestão de áreas do utilizador (com agregação MultiPolygon)
+URL base (producao):
+`https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app`
 
-**URL Base**  
-https://virtuacrop-agrisentinel-793092962822.europe-southwest1.run.app
+Esta versao suporta 4 indices:
+- `ndvi`
+- `evi`
+- `ndmi`
+- `cired_edge` (alias aceito em rotas: `cired-edge`)
 
----
-### 1 POST /user_areas
+## 1) Criar/guardar areas e iniciar processamento
 
-Guarda um ou mais polígonos para um user_id e inicia o processamento NDVI.
+### `POST /user_areas`
+Guarda poligonos para um `user_id` e inicia processamento assincrono para:
+- NDVI
+- EVI
+- NDMI
+- CIred-edge
 
-#### Corpo do pedido
-
-Aceita GeoJSON nas formas abaixo. IDs de parcelas devem vir em properties.wisecropID (recomendado). O campo opcional properties.crop é preservado.
-	•	FeatureCollection com várias Features (Polygon/MultiPolygon)
-	•	Feature única (Polygon/MultiPolygon)
-	•	Geometry direta (Polygon/MultiPolygon)
-
-
-#### Exemplo de Payload
-```json
-{
-    "polygon": {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "uid": "poly_1",
-                    "crop": "trigo"
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[
-                        [-8.5530436, 39.3620312],
-                        [-8.5532134, 39.3630647],
-                        [-8.5532452, 39.3635040],
-                        [-8.5531646, 39.3638096],
-                        [-8.5526934, 39.3643275],
-                        [-8.5520865, 39.3646373],
-                        [-8.5516026, 39.3648113],
-                        [-8.5509914, 39.3648665],
-                        [-8.5499048, 39.3648113],
-                        [-8.5492341, 39.3646373],
-                        [-8.5487418, 39.3643614],
-                        [-8.5483895, 39.3641704],
-                        [-8.5481390, 39.3638351],
-                        [-8.5480329, 39.3635083],
-                        [-8.5478631, 39.3631814],
-                        [-8.5477740, 39.3624684],
-                        [-8.5479311, 39.3620863],
-                        [-8.5478886, 39.3617977],
-                        [-8.5480966, 39.3613011],
-                        [-8.5490728, 39.3606984],
-                        [-8.5499090, 39.3606474],
-                        [-8.5512885, 39.3605201],
-                        [-8.5517108, 39.3606283],
-                        [-8.5524112, 39.3610273],
-                        [-8.5528611, 39.3614157],
-                        [-8.5529736, 39.3615940],
-                        [-8.5530521, 39.3619739],
-                        [-8.5530436, 39.3620312]
-                    ]]
-                }
-            },
-            {
-                "type": "Feature",
-                "properties": {
-                    "uid": "poly_2",
-                    "crop": "milho"
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[
-                        [-8.551313422321872, 39.360399584256442],
-                        [-8.550708273295971, 39.360530106595355],
-                        [-8.549379318572427, 39.3606487632671],
-                        [-8.548465662199989, 39.36041144992361],
-                        [-8.547824916172567, 39.359948688903785],
-                        [-8.547516408826031, 39.359035032531352],
-                        [-8.547516408826031, 39.357611152470412],
-                        [-8.547919841509964, 39.356946675108638],
-                        [-8.548489393534341, 39.356626302094924],
-                        [-8.550613347958578, 39.356317794748385],
-                        [-8.551918571347773, 39.356804287102541],
-                        [-8.552405063701928, 39.357480630131491],
-                        [-8.552571183042371, 39.35829936116653],
-                        [-8.552642377045418, 39.359331674210715],
-                        [-8.552571183042371, 39.359628315890077],
-                        [-8.55222707869431, 39.359948688903785],
-                        [-8.552025362352342, 39.360126673911402],
-                        [-8.551645661002759, 39.360328390253372],
-                        [-8.551313422321872, 39.360399584256442]
-                    ]]
-                }
-            }
-        ]
-    },
-    "user_id": "utilizador123",
-}
-```
-#### Resposta (exemplo) (200)
-
-```json
-{
-  "detail": "Polygon(s) saved; NDVI processing started",
-  "user_id": "utilizador123",
-  "added_ids": ["area001", "area002"]
-}
-```
-
-
-### 2 POST /user_areas/<user_id>
-
-Devolve um snapshot das áreas guardadas para o utilizador e o respetivo nó NDVI associado a cada entrada top-level.
-
-#### Corpo do pedido
-
-Não tem.
-
-#### Resposta (200 – exemplo)
+Corpo (exemplo):
 ```json
 {
   "user_id": "utilizador123",
-  "areas": [
-    {
-      "area_id": "polygons",
-      "ndvi": {}
-    },
-    {
-      "area_id": "saved_at",
-      "ndvi": {}
-    },
-    {
-      "area_id": "ndvi",
-      "ndvi": {
-        "status": "completed",
-        "records_union": {
-          "2025-09-01": {
-            "MIN": 0.12,
-            "MEDIAN": 0.41,
-            "MAX": 0.76,
-            "total_valid_pixels": 38219,
-            "percentages": { "1": 0, "2": 1.2, "3": 4.8, "4": 10.5, "5": 18.7, "6": 24.3, "7": 20.1, "8": 13.4, "9": 5.6, "10": 1.4 }
-          }
-        },
-        "records_by_polygon": {
-          "area001": {
-            "2025-09-01": { "MIN": 0.11, "MEDIAN": 0.40, "MAX": 0.74, "total_valid_pixels": 10234, "percentages": { "1": 0, "2": 2.1, "...": 0 } }
-          },
-          "area002": {
-            "2025-09-01": { "MIN": 0.13, "MEDIAN": 0.43, "MAX": 0.78, "total_valid_pixels": 27985, "percentages": { "1": 0, "2": 0.7, "...": 0 } }
-          }
-        },
-        "images": {
-          "2025-09-01": {
-            "gcs_url": "https://storage.googleapis.com/virtuacrop-agrisentinel/ndvi/utilizador123/2025-09-01.tif"
-          }
-        }
+  "polygon": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": { "uid": "62543", "crop": "wheat" },
+        "geometry": { "type": "Polygon", "coordinates": [[[-8.55,39.36],[-8.54,39.36],[-8.54,39.37],[-8.55,39.37],[-8.55,39.36]]] }
       }
-    }
-  ]
+    ]
+  }
 }
 ```
 
-### 3 Datas de NDVI (GET)
-O código expõe rotas GET (em vez de POST) para consultar as datas disponíveis.
-Mantemos este endpoint na documentação, mas refletindo a implementação real:
-
-#### GET /user_areas/dates/<user_id>
-Devolve as datas da série agregada (records_union) do utilizador.
-
-#### Resposta (200)
+Resposta (exemplo):
 ```json
 {
-  "dates": ["2025-08-18", "2025-08-22", "2025-08-29", "2025-09-01"]
+  "detail": "Polygon(s) saved; NDVI/EVI/NDMI/CIred-edge processing started asynchronously.",
+  "user_id": "utilizador123",
+  "added_ids": ["62543"],
+  "skipped_ids": []
 }
 ```
 
-### 4 GET /user_areas/<user_id>/records_by_polygon/<area_id>/<date>
-Devolve o registo NDVI (estatísticas) de uma área específica (area_id = wisecropID) para uma data específica.
+## 2) Processamento assincrono por indice
 
-#### Parâmetros de caminho
-	•	user_id — identificador do utilizador.
-	•	area_id — identificador da parcela (valor de properties.wisecropID gravado no POST /user_areas).
-	•	date — data YYYY-MM-DD existente em records_by_polygon[area_id].
+### NDVI
+- `POST /process_ndvi_async`
 
-#### Resposta (exemplo) (200)
-Um objeto com uma única chave igual à date, cujo valor são as estatísticas NDVI desse dia.
+### EVI
+- `POST /process_evi_async`
+
+### NDMI
+- `POST /process_ndmi_async`
+
+### CIred-edge
+- `POST /process_cired_edge_async`
+
+Body esperado:
 ```json
 {
-  "2025-09-01": {
+  "user_id": "utilizador123",
+  "polygon": { "type": "FeatureCollection", "features": [] }
+}
+```
+
+## 3) Listar areas de um utilizador
+
+### `GET /user_areas/<user_id>`
+Retorna lista de `area_id` guardados no no `polygons`.
+
+## 4) Consultar datas disponiveis
+
+### NDVI (legacy, mantido)
+- `GET /user_areas/dates/<user_id>`
+- `GET /user_areas/dates/<user_id>/<area_id>`
+
+### Qualquer indice
+- `GET /user_areas/<index_name>/dates/<user_id>`
+- `GET /user_areas/<index_name>/dates/<user_id>/<area_id>`
+
+`index_name` aceites: `ndvi`, `evi`, `ndmi`, `cired_edge`, `cired-edge`.
+
+Resposta sem `area_id`:
+```json
+{ "dates": ["2026-01-18", "2026-01-28"] }
+```
+
+Resposta com `area_id`:
+```json
+{ "area_id": "62543", "dates": ["2026-01-18"] }
+```
+
+## 5) Registos por poligono
+
+### NDVI (legacy, mantido)
+- `GET /user_areas/<user_id>/records_by_polygon/<area_id>`
+- `GET /user_areas/<user_id>/records_by_polygon/<area_id>/<date>`
+
+### Qualquer indice
+- `GET /user_areas/<user_id>/<index_name>/records_by_polygon/<area_id>`
+- `GET /user_areas/<user_id>/<index_name>/records_by_polygon/<area_id>/<date>`
+
+Resposta (exemplo):
+```json
+{
+  "2026-01-18": {
     "MIN": 0.112,
     "MEDIAN": 0.402,
     "MAX": 0.742,
     "total_valid_pixels": 10234,
     "percentages": {
-      "1": 0.0,
-      "2": 2.1,
-      "3": 5.0,
-      "4": 10.4,
-      "5": 18.2,
-      "6": 24.7,
-      "7": 20.3,
-      "8": 13.1,
-      "9": 5.2,
-      "10": 1.0
+      "1": 0.0, "2": 2.1, "3": 5.0, "4": 10.4, "5": 18.2,
+      "6": 24.7, "7": 20.3, "8": 13.1, "9": 5.2, "10": 1.0
     }
   }
 }
 ```
-Campo percentages: histograma em 10 bins (1–10) cobrindo o intervalo 0.0–1.0 de NDVI, em percentagem de píxeis válidos na área.
 
-### 5 POST /user_areas/<user_id>/multiple_records_by_polygons
-Consulta em lote os registos NDVI (records_by_polygon) de múltiplas parcelas de um utilizador, com opção de filtrar por intervalo de datas (inclusive).
+## 6) Consulta em lote (multiple records)
 
-#### Corpo do pedido (JSON)
-O endpoint aceita um dos dois formatos:
+### NDVI (legacy, mantido)
+- `POST /user_areas/<user_id>/multiple_records_by_polygons`
 
-A) Intervalo global para todas as áreas
+### Qualquer indice
+- `POST /user_areas/<user_id>/<index_name>/multiple_records_by_polygons`
+
+Body com intervalo global:
 ```json
 {
-  "areas": ["areaA", "areaB", "areaC"],
-  "dates": ["2025-09-01", "2025-09-24"]   // opcional; se omitido, traz todas as datas
+  "areas": ["62543", "72295"],
+  "dates": ["2026-01-01", "2026-01-31"]
 }
 ```
 
-B) Intervalo por área
+Body com intervalo por area:
 ```json
 {
   "items": [
-    { "area_id": "areaA", "dates": ["2025-09-01", "2025-09-10"] },
-    { "area_id": "areaB" },                    // sem dates => todas as datas
-    { "area_id": "areaC", "dates": ["2025-09-15"] } // 1 data => range de 1 dia
+    { "area_id": "62543", "dates": ["2026-01-01", "2026-01-15"] },
+    { "area_id": "72295" }
   ]
 }
 ```
-#### Regras e validação
-	•	dates deve ser lista de strings com formato YYYY-MM-DD.
-	•	Se dates tiver 1 ou mais datas, o serviço usa min(dates) e max(dates) como intervalo inclusive.
-	•	É obrigatório enviar areas (não vazio) ou items (lista).
-	•	Cada area_id corresponde ao uid gravado quando a área foi criada.
 
-#### Resposta (exemplo) (200)
-```json
-{
-  "results": {
-    "areaA": {
-      "2025-09-01": {
-        "MIN": 0.12, "MEDIAN": 0.41, "MAX": 0.76,
-        "total_valid_pixels": 1234,
-        "percentages": { "1": 0, "2": 1.2, "3": 4.8, "4": 10.5, "5": 18.7, "6": 24.3, "7": 20.1, "8": 13.4, "9": 5.6, "10": 1.4 }
-      },
-      "2025-09-08": { "...": "..." }
-    },
-    "areaB": {
-      "2025-09-03": { "...": "..." }
-    }
-  },
-  "not_found_areas": []
-}
+## 7) Apagar area
+
+### `DELETE /user_areas/<user_id>/polygons/<area_id>`
+Remove a area de `polygons` e remove os respetivos registos em todos os indices:
+- `ndvi`
+- `evi`
+- `ndmi`
+- `cired_edge`
+
+Se nao restarem poligonos, o no agregado de indices e limpo.
+
+## 8) Estrutura da base de dados (Realtime DB)
+
+Exemplo de estrutura:
+```text
+user_areas/
+  <user_id>/
+    polygons/
+      <area_id>/
+        geometry: {Polygon|MultiPolygon}
+        crop: ...
+        created_at: ...
+    polygon: {MultiPolygon agregado}
+    saved_at: ...
+    ndvi/
+      status
+      records_by_polygon/<area_id>/<date>
+      records_union/<date>
+      images/<date>/gcs_url
+    evi/
+      status
+      records_by_polygon/<area_id>/<date>
+      records_union/<date>
+      images/<date>/gcs_url
+    ndmi/
+      ...
+    cired_edge/
+      ...
 ```
 
-### 6 DELETE /user_areas/<user_id>/polygons/<area_id>
-Remove uma parcela (identificada por area_id, que corresponde ao wisecropID guardado no POST /user_areas) de um utilizador.
-Esta operação também atualiza (ou limpa) os dados agregados e séries NDVI associadas.
+## 9) Convencoes importantes
 
-#### Parâmetros de caminho
-	•	user_id — ID do utilizador.
-	•	area_id — ID da parcela (valor de properties.wisecropID).
+- Para manter IDs corretos em `records_by_polygon`, envie `FeatureCollection` com `properties.uid`.
+- NDVI legacy continua compativel nas rotas antigas.
+- As novas rotas indexadas (`<index_name>`) devem ser usadas para EVI/NDMI/CIred-edge.
 
-#### Resposta (exameplo) (200)
-```json
-{
-  "detail": "Polygon 'area-001' removed for user 'utilizador123'."
-}
-```
+## 10) Scripts locais (sem Cloud Functions)
 
-### 7. GET /productivity/<user_id>
-Devolve o URL público do ficheiro GeoTIFF de produtividade (zonas de produção) armazenado no bucket GCS para o utilizador especificado.
-
-#### Parâmetros de caminho
-	•	user_id — identificador único do utilizador (por exemplo, utilizador123).
-
-#### Resposta (exameplo) (200)
-```json
-{
-  "user_id": "utilizador123",
-  "combined_url": "https://storage.googleapis.com/virtuacrop-agrisentinel/productivity_zones/utilizador123/prod_zones.tif"
-}
-```
-
-#### Descrição
-O cálculo baseia-se no NDVI mediano multianual (últimos 5 anos) para as parcelas guardadas do utilizador.
-O ficheiro .tif devolvido é um Cloud-Optimized GeoTIFF (COG) com valores inteiros de classes (1–4) representando zonas de produtividade:
-
-- 1: Baixa produtividade
-- 2: Média-baixa
-- 3: Média-alta
-- 4: Alta produtividade
-
-### 8. /super-resolution
-
-TBD
+Scripts utilitarios no projeto:
+- `backfill_missing_indexes.py`: completa indices em falta para utilizadores com NDVI.
+- `weekly_incremental_local.py`: corrida semanal incremental por utilizador e indice.
